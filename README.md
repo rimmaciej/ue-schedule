@@ -1,1 +1,1 @@
-## UE Timetable downloader
+## UE Plan tool
