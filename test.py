@@ -2,10 +2,11 @@
 from UEPlanTool import PlanDownloader
 
 # Initialization
-planId = 0
+planId = None
 startDate = "2019-10-06"
-endDate = "2019-10-12"
+endDate = "2019-10-20"
 p = PlanDownloader(planId, startDate, endDate)
 
 # Output
-p.printEvents()
+with open("plan.ics", "wb") as f:
+    f.write(p.exportICS())
