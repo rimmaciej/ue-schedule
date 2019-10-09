@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 import re
 import requests
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, vDatetime
 
 BASE_URL = f"https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
 
@@ -109,3 +109,19 @@ class PlanDownloader:
     def getPlanObject(self):
         """Return a list with all events"""
         return list(self.plan)
+
+    def exportICS(self):
+        cal = Calendar()
+        cal.add("prodid", "-//ue-plan-tool//")
+        cal.add("version", "2.0")
+
+        for event in self.plan:
+            ev = Event()
+            ev.add("summary", event["summary"])
+            ev.add("location", event["location"])
+            ev.add("description", event["teacher"])
+            ev.add("dtstart", vDatetime(event["start"]))
+            ev.add("dtend", vDatetime(event["end"]))
+            cal.add_component(ev)
+
+        return cal.to_ical()
