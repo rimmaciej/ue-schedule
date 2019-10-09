@@ -8,6 +8,14 @@ You can get your ID by going to "Virtual university", "Rozkład zajęć" > "Prez
 
 The url ends with `/calendarid_XXXXXX.ics`, the XXXXXX will be your ID.
 
+### Installation
+You can install dependencies in a virtualenv with pipenv
+```
+pipenv install
+pipenv shell
+```
+
+
 ### Usage
 - Importing
 ```python
