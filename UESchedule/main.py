@@ -6,7 +6,7 @@ from icalendar import Calendar, Event, vDatetime
 BASE_URL = f"https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
 
 
-class PlanDownloader:
+class ScheduleDownloader:
     def __init__(self, planId, dateStart=None, dateEnd=None):
         self.planId = planId
         self.dateStart = dateStart
@@ -106,7 +106,7 @@ class PlanDownloader:
                 )
             print()
 
-    def getPlanObject(self):
+    def getPlanList(self):
         """Return a list with all events"""
         return list(self.plan)
 
