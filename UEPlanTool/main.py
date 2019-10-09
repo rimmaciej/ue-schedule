@@ -111,10 +111,14 @@ class PlanDownloader:
         return list(self.plan)
 
     def exportICS(self):
+        """Build an iCalendar out of the parsed plan"""
+
+        # initialize Calendar and set required parameters
         cal = Calendar()
-        cal.add("prodid", "-//ue-plan-tool//")
+        cal.add("prodid", "-//ue-plan-tool//UE Plan//PL")
         cal.add("version", "2.0")
 
+        # add all events from the plan to the calendar
         for event in self.plan:
             ev = Event()
             ev.add("summary", event["summary"])
@@ -123,5 +127,4 @@ class PlanDownloader:
             ev.add("dtstart", vDatetime(event["start"]))
             ev.add("dtend", vDatetime(event["end"]))
             cal.add_component(ev)
-
         return cal.to_ical()
