@@ -6,74 +6,46 @@ from icalendar import Calendar, Event, vDatetime
 BASE_URL = f"https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
 
 
-class ScheduleDownloader:
-    def __init__(self, planId, dateStart=None, dateEnd=None):
-        self.planId = planId
-        self.dateStart = dateStart
-        self.dateEnd = dateEnd
+class Schedule:
+    """Takes a list with schedule events"""
 
-        # Download and parse
-        self.plan = self._download_and_parse()
+    def __init__(self, schedule):
+        self.schedule = schedule
 
-        # Filter the events
-        self.remove_useless_events()
-        self.cleanup_groups()
-        self.fix_cnti_name()
-        self.split_teachers()
+    def run_filters(self):
+        self.schedule = self.remove_useless_events(self.schedule)
+        self.schedule = self.split_teachers(self.schedule)
+        self.schedule = self.cleanup_groups(self.schedule)
+        self.schedule = self.fix_cnti_name(self.schedule)
 
-    def _download_and_parse(self):
-        """Download the plan ics, parse int and convert into a list"""
-
-        # Check if dates are declared and prepare the url
-        if self.dateStart is None or self.dateEnd is None:
-            url = f"{BASE_URL}/calendarid_{self.planId}.ics"
-        else:
-            url = f"{BASE_URL}/calendarid_{self.planId}.ics?dataod={self.dateStart}&datado={self.dateEnd}"
-
-        # Parse
-        ics = Calendar.from_ical(requests.get(url).text)
-
-        # Convert into a list
-        return [
-            {
-                "summary": str(component.get("summary")).strip(),
-                "location": str(component.get("location")).strip(),
-                "start": component.get("dtstart").dt,
-                "end": component.get("dtend").dt,
-            }
-            for component in ics.walk()
-            if component.name == "VEVENT"
-        ]
-
-    def remove_useless_events(self):
+    def remove_useless_events(self, schedule):
         """Filter out the aggregate foreign language event"""
 
         def determine_if_useful(event):
             return not event["summary"].startswith("Język obcy I, Język obcy II")
 
-        self.plan = filter(determine_if_useful, self.plan)
+        return filter(determine_if_useful, schedule)
 
-    def cleanup_groups(self):
+    def cleanup_groups(self, schedule):
         """Remove useless group strings from summary"""
-
         grp_regex = re.compile(r"\w{1,}_K-ce_19_z_SI_.*(,)?")
 
         def drop_groups(event):
             event["summary"] = grp_regex.sub("", event["summary"])
             return event
 
-        self.plan = map(drop_groups, self.plan)
+        return map(drop_groups, schedule)
 
-    def fix_cnti_name(self):
+    def fix_cnti_name(self, schedule):
         """Replace @ with CNTI in location"""
 
         def fix_name(event):
             event["location"] = event["location"].replace("@", "CNTI")
             return event
 
-        self.plan = map(fix_name, self.plan)
+        return map(fix_name, schedule)
 
-    def split_teachers(self):
+    def split_teachers(self, schedule):
         """Split out the teacher name from summary"""
 
         def teacher_splitter(event):
@@ -82,9 +54,13 @@ class ScheduleDownloader:
             event["teacher"] = split_summary[1].strip()
             return event
 
-        self.plan = map(teacher_splitter, self.plan)
+        return map(teacher_splitter, schedule)
 
-    def printEvents(self):
+    def to_list(self):
+        """Return a list with all events"""
+        return list(self.schedule)
+
+    def print(self):
         """Print all the events grouped by date"""
         events_by_date = {}
 
@@ -106,11 +82,7 @@ class ScheduleDownloader:
                 )
             print()
 
-    def getPlanList(self):
-        """Return a list with all events"""
-        return list(self.plan)
-
-    def exportICS(self):
+    def to_ics(self):
         """Build an iCalendar out of the parsed plan"""
 
         # initialize Calendar and set required parameters
@@ -119,7 +91,7 @@ class ScheduleDownloader:
         cal.add("version", "2.0")
 
         # add all events from the plan to the calendar
-        for event in self.plan:
+        for event in self.schedule:
             ev = Event()
             ev.add("summary", event["summary"])
             ev.add("location", event["location"])
@@ -128,3 +100,32 @@ class ScheduleDownloader:
             ev.add("dtend", vDatetime(event["end"]))
             cal.add_component(ev)
         return cal.to_ical()
+
+
+class ScheduleDownloader:
+    def __init__(self, schedule_id):
+        self.schedule_id = schedule_id
+        self.url = f"{BASE_URL}/calendarid_{self.schedule_id}.ics"
+
+    def download(self, dateStart=None, dateEnd=None):
+        """Download the plan ics and pass data to Schedule object"""
+
+        if dateStart and dateEnd:
+            url = f"{self.url}?dataod={dateStart}&datado={dateEnd}"
+        else:
+            url = self.url
+
+        # Parse
+        ics = Calendar.from_ical(requests.get(url).text)
+
+        # Convert into a Schedule object
+        return Schedule(
+            {
+                "summary": str(component.get("summary")).strip(),
+                "location": str(component.get("location")).strip(),
+                "start": component.get("dtstart").dt,
+                "end": component.get("dtend").dt,
+            }
+            for component in ics.walk()
+            if component.name == "VEVENT"
+        )

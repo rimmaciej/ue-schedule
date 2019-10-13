@@ -24,21 +24,31 @@ from UESchedule import ScheduleDownloader
 
 - Downloading
 ```python
-# whole schedule
-p = ScheduleDownloader(studentsPlanID)
+# initialize the downloader
+sd = ScheduleDownloader(studentsPlanID)
 
-# schedule between dates
-p = ScheduleDownloader(studentsPlanID, startDate, endDate)
+# date range
+schedule = sd.download(startDate, endDate)
+
+# whole schedule
+schedule = sd.download()
 ```
+
+- Filtering
+```python
+# run predefined filters
+schedule.run_filters()
+```
+
 
 - Exporting
 ```python
 # print, grouped by days
-p.printElements()
+schedule.print()
 
 # get a list of all events
-p.getList()
+schedule.to_list()
 
 # export as ICS
-p.exportICS()
+schedule.to_ics()
 ```
