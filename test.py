@@ -13,9 +13,17 @@ studentId = sys.argv[1]
 startDate = sys.argv[2]
 endDate = sys.argv[3]
 
-p = ScheduleDownloader(studentId, startDate, endDate)
+# Initialize the downloader
+sd = ScheduleDownloader(studentId)
+
+# Download the schedule
+schedule = sd.download(startDate, endDate)
+
+# Run filters on the schedule
+schedule.run_filters()
 
 # Output
 with open("plan.ics", "wb") as f:
-    f.write(p.exportICS())
+    # Output to ics and save it to a file
+    f.write(schedule.to_ics())
     print("Saved to plan.ics")
