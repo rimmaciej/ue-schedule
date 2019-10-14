@@ -30,7 +30,7 @@ if len(sys.argv) == 5:
     if sys.argv[4] == "-j":
         with open("plan.json", "w") as f:
             # Output to json and save it to a file
-            f.write(schedule.to_json())
+            f.write(schedule.to_json(nested=True))
             print("Saved to plan.json")
 else:
     # Defaults to ics

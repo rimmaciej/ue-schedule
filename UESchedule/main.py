@@ -57,12 +57,29 @@ class Schedule:
 
         return map(teacher_splitter, schedule)
 
-    def to_list(self):
+    def nest_by_date(self, schedule):
+        """Returns schedule with events nested by date"""
+        nested = {}
+
+        for event in schedule:
+            day = event["start"].strftime("%Y-%m-%d")
+            if day not in nested.keys():
+                nested[day] = []
+            nested[day].append(event)
+
+        return nested
+
+    def to_list(self, nested=False):
         """Return a list with all events"""
+        if nested:
+            return list(self.nest_by_date(self.schedule))
         return list(self.schedule)
 
-    def to_json(self):
+    def to_json(self, nested=False):
         """Build a json file out of parsed plan"""
+        if nested:
+            schedule = self.nest_by_date(self.schedule)
+            return json.dumps(schedule, default=str)
         return json.dumps(list(self.schedule), default=str)
 
     def print(self):
