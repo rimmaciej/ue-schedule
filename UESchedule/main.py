@@ -61,6 +61,10 @@ class Schedule:
         """Return a list with all events"""
         return list(self.schedule)
 
+    def to_json(self):
+        """Build a json file out of parsed plan"""
+        return json.dumps(list(self.schedule), default=str)
+
     def print(self):
         """Print all the events grouped by date"""
         events_by_date = {}
@@ -92,7 +96,7 @@ class Schedule:
         cal.add("version", "2.0")
 
         # add all events from the plan to the calendar
-       
+
         for event in self.schedule:
             ev = Event()
             ev.add("summary", event["summary"])
@@ -103,28 +107,6 @@ class Schedule:
             cal.add_component(ev)
         return cal.to_ical()
 
-    def to_json(self):
-        """Bulid a json file out of parsed plan"""
-        #build a json 
-        i = 1;
-        dump = ' { "events": ['
-        for event in self.schedule:
-            scheme = json.dumps({     
-                    "eventid": i,
-                    "details": {
-                    "summary": event["summary"],
-                    "location": event["location"],
-                    "description": event["teacher"],
-                    "start": event["start"],
-                    "end": event["end"]
-                    }
-            },indent=5, sort_keys=False, default=str)
-            i = i+1
-            scheme = scheme+",\n"
-            dump = dump + scheme
-        dump = dump[:-2]
-        dump = dump + "]}"
-        return dump
 
 class ScheduleDownloader:
     def __init__(self, schedule_id):
