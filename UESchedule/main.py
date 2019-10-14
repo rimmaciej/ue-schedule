@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.7
 import re
 import requests
+import json
 from icalendar import Calendar, Event, vDatetime
 
 BASE_URL = f"https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
@@ -91,6 +92,7 @@ class Schedule:
         cal.add("version", "2.0")
 
         # add all events from the plan to the calendar
+       
         for event in self.schedule:
             ev = Event()
             ev.add("summary", event["summary"])
@@ -101,6 +103,28 @@ class Schedule:
             cal.add_component(ev)
         return cal.to_ical()
 
+    def to_json(self):
+        """Bulid a json file out of parsed plan"""
+        #build a json 
+        i = 1;
+        dump = ' { "events": ['
+        for event in self.schedule:
+            scheme = json.dumps({     
+                    "eventid": i,
+                    "details": {
+                    "summary": event["summary"],
+                    "location": event["location"],
+                    "description": event["teacher"],
+                    "start": event["start"],
+                    "end": event["end"]
+                    }
+            },indent=5, sort_keys=False, default=str)
+            i = i+1
+            scheme = scheme+",\n"
+            dump = dump + scheme
+        dump = dump[:-2]
+        dump = dump + "]}"
+        return dump
 
 class ScheduleDownloader:
     def __init__(self, schedule_id):

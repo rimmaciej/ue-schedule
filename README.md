@@ -51,4 +51,7 @@ schedule.to_list()
 
 # export as ICS
 schedule.to_ics()
+
+# export as JSON
+schedule.to_json()
 ```
