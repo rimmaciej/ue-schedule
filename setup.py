@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ue-schedule-tool",
-    version="0.1.1",
+    version="0.1.2",
     author="Maciej Rim",
     author_email="pypi@mrim.pl",
     description="Class schedule download library for UE Katowice",

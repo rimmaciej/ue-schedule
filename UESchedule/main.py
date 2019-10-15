@@ -69,10 +69,10 @@ class Schedule:
 
         return nested
 
-    def to_list(self, nested=False):
-        """Return a list with all events"""
+    def get_schedule(self, nested=False):
+        """Return a list or dict with all events"""
         if nested:
-            return list(self.nest_by_date(self.schedule))
+            return dict(self.nest_by_date(self.schedule))
         return list(self.schedule)
 
     def to_json(self, nested=False):
