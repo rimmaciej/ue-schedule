@@ -20,6 +20,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
-    install_required=["icalendar==4.0.3", "requests==2.22.0"],
+    install_requires=["icalendar==4.0.3", "requests==2.22.0"],
 )
 
