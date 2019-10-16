@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.7
 import sys
-from ue_schedule import ScheduleDownloader
+from ue_schedule import Schedule
 
 # Initialization
 if len(sys.argv) < 4:
@@ -14,27 +14,7 @@ startDate = sys.argv[2]
 endDate = sys.argv[3]
 
 # Initialize the downloader
-sd = ScheduleDownloader(studentId)
+schedule = Schedule(studentId, startDate, endDate)
 
-# Download the schedule
-schedule = sd.download(startDate, endDate)
-
-# Run filters on the schedule
-schedule.run_filters()
-
-# Output
-
-# Checks if flags are present
-if len(sys.argv) == 5:
-    # Save to json
-    if sys.argv[4] == "-j":
-        with open("plan.json", "w") as f:
-            # Output to json and save it to a file
-            f.write(schedule.to_json(nested=True))
-            print("Saved to plan.json")
-else:
-    # Defaults to ics
-    with open("plan.ics", "wb") as f:
-        # Output to ics and save it to a file
-        f.write(schedule.to_ics())
-        print("Saved to plan.ics")
+for event in schedule.events:
+    print(f"{event.start} {event.name} {event.teacher}")

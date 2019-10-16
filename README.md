@@ -2,7 +2,7 @@
 
 A utility library used to download, filter and export class schedule at University of Economics in Katowice.  Imports data from ["Wirtualna uczelnia"](https://e-uczelnia.ue.katowice.pl/).
 
-Each students gets a constant plan id which is used to generate the schedule.  
+Each students gets a constant schedule id which is used to generate the schedule.  
 
 You can get your ID by going to "Wirtualna uczelnia" > "Rozkład zajęć" > "Prezentacja harmonogramu zajęć" > "Eksport planu do kalendarza".
 
@@ -21,41 +21,29 @@ pipenv shell
 ```
 
 ### Usage
-- Importing
+Import
 ```python
-from ue_schedule import ScheduleDownloader
+from ue_schedule import Schedule
 ```
 
-- Downloading
+Initialization
 ```python
-# initialize the downloader
-sd = ScheduleDownloader(schedule_id)
+# initialize the downloader with dates
+s = Schedule(schedule_id, start_date, end_date)
 
-# date range
-schedule = sd.download(start_date, end_date)
-
-# whole schedule
-schedule = sd.download()
+# and without dates
+s = Schedule(schedule_id)
 ```
 
-- Filtering
+Export
 ```python
-# run predefined filters
-schedule.run_filters()
+# get event list
+schedule.events
+
+# export as iCalendar
+schedule.to_ical()
 ```
-
-
-- Exporting
+Data is automatically fetched when exporting, but you can force fetch with
 ```python
-# print, grouped by days
-schedule.print()
-
-# get a list of all events
-schedule.to_list()
-
-# export as ICS
-schedule.to_ics()
-
-# export as JSON
-schedule.to_json()
+schedule.fetch()
 ```
