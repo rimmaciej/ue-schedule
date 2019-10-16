@@ -1,16 +1,16 @@
-## UE Class schedule tool
+## UE Class schedule utility library
 
-A tool/library used to download, parse and transform class schedule at University of Economics in Katowice.  Imports data from the ["virtual university"](https://e-uczelnia.ue.katowice.pl/).
+A utility library used to download, filter and export class schedule at University of Economics in Katowice.  Imports data from ["Wirtualna uczelnia"](https://e-uczelnia.ue.katowice.pl/).
 
 Each students gets a constant plan id which is used to generate the schedule.  
 
-You can get your ID by going to "Virtual university", "Rozkład zajęć" > "Prezentacja harmonogramu zajęć" > "Eksport planu do kalendarza".
+You can get your ID by going to "Wirtualna uczelnia" > "Rozkład zajęć" > "Prezentacja harmonogramu zajęć" > "Eksport planu do kalendarza".
 
 The url ends with `/calendarid_XXXXXX.ics`, the XXXXXX will be your ID.
 
 ### Installation
 ```
-pip install ue-schedule-tool
+pip install ue-schedule
 ```
 
 ### Development
@@ -23,16 +23,16 @@ pipenv shell
 ### Usage
 - Importing
 ```python
-from UESchedule import ScheduleDownloader
+from ue_schedule import ScheduleDownloader
 ```
 
 - Downloading
 ```python
 # initialize the downloader
-sd = ScheduleDownloader(studentsPlanID)
+sd = ScheduleDownloader(schedule_id)
 
 # date range
-schedule = sd.download(startDate, endDate)
+schedule = sd.download(start_date, end_date)
 
 # whole schedule
 schedule = sd.download()

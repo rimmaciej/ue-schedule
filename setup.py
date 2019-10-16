@@ -1,17 +1,18 @@
 import setuptools
+from ue_schedule import VERSION
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ue-schedule-tool",
-    version="0.1.2",
+    name="ue-schedule",
+    version=VERSION,
     author="Maciej Rim",
     author_email="pypi@mrim.pl",
-    description="Class schedule download library for UE Katowice",
+    description="UE Katowice class schedule utility library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/rimmaciej/ue-schedule-tool",
+    url="https://github.com/rimmaciej/ue-schedule",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.7
 import sys
-from UESchedule import ScheduleDownloader
+from ue_schedule import ScheduleDownloader
 
 # Initialization
 if len(sys.argv) < 4:
