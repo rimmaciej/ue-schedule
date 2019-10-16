@@ -16,5 +16,9 @@ endDate = sys.argv[3]
 # Initialize the downloader
 schedule = Schedule(studentId, startDate, endDate)
 
+# Display all the events
 for event in schedule.events:
-    print(f"{event.start} {event.name} {event.teacher}")
+    start = event.start.strftime("%H:%M")
+    end = event.end.strftime("%H:%M")
+
+    print(f"{start} {end}\n{event.name}\n{event.teacher}\n")

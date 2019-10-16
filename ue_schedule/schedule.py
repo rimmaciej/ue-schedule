@@ -98,4 +98,11 @@ class Event:
         self.summary = re.sub(r"\w{1,}_K-ce_19_z_SI_.*(,)?", "", self.summary)
 
         # split summary into name and teacher
-        self.name, self.teacher = self.summary.split("  ", 1)
+        split_summary = self.summary.split("  ", 1)
+        self.name = split_summary[0].strip()
+        self.teacher = split_summary[1].strip()
+
+        duration = self.end - self.start
+
+        if duration == datetime.timedelta(minutes=100):
+            self.end -= datetime.timedelta(minutes=10)
