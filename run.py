@@ -17,8 +17,12 @@ endDate = sys.argv[3]
 schedule = Schedule(studentId, startDate, endDate)
 
 # Display all the events
-for event in schedule.events:
-    start = event.start.strftime("%H:%M")
-    end = event.end.strftime("%H:%M")
+for day, events in schedule.nested_events.items():
 
-    print(f"{start} {end}\n{event.name}\n{event.teacher}\n")
+    print(day)
+
+    for event in events:
+        start = event.start.strftime("%H:%M")
+        end = event.end.strftime("%H:%M")
+
+        print(f"\t{start} - {end}\n\t{event.name}\n\t{event.teacher}\n")

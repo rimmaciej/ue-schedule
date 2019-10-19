@@ -39,6 +39,23 @@ class Schedule:
             self.fetch()
         return self.data
 
+    @property
+    def nested_events(self):
+        if not self.data:
+            self.fetch()
+
+        nested = {}
+
+        for event in self.data:
+            date = datetime.date(event.start.year, event.start.month, event.start.day)
+
+            if date not in nested.keys():
+                nested[date] = []
+
+            nested[date].append(event)
+
+        return nested
+
     def to_ical(self):
         """Build an iCalendar out of the parsed schedule"""
         if not self.data:
