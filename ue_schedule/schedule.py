@@ -119,7 +119,17 @@ class Event:
         self.name = split_summary[0].strip()
         self.teacher = split_summary[1].strip()
 
+        # fix the finish time of 1.5h events
+        # if it's 1h 40min, subtract 10 min
         duration = self.end - self.start
-
         if duration == datetime.timedelta(minutes=100):
             self.end -= datetime.timedelta(minutes=10)
+
+        # set location to none if not specified
+        if self.location == "brak lokalizacji brak sali":
+            self.location = None
+
+        # set teacher to none if not specified
+        if self.teacher == "brak nauczyciela":
+            self.teacher = None
+
