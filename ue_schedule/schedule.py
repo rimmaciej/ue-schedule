@@ -2,6 +2,7 @@ import re
 import json
 import requests
 import icalendar
+import pytz
 import datetime
 
 
@@ -68,6 +69,9 @@ class Schedule:
 
         # add event components
         for event in self.data:
+            event.start = event.start.replace(tzinfo=pytz.utc)
+            event.end = event.end.replace(tzinfo=pytz.utc)
+
             ev = icalendar.Event()
             ev.add("summary", event.name)
             ev.add("location", event.location)
