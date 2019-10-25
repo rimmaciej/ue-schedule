@@ -70,8 +70,13 @@ class Schedule:
         for event in self.data:
             ev = icalendar.Event()
             ev.add("summary", event.name)
-            ev.add("location", event.location)
-            ev.add("description", event.teacher)
+
+            if event.location:
+                ev.add("location", event.location)
+
+            if event.description:
+                ev.add("description", event.teacher)
+
             ev.add("dtstart", icalendar.vDatetime(event.start))
             ev.add("dtend", icalendar.vDatetime(event.end))
             cal.add_component(ev)
