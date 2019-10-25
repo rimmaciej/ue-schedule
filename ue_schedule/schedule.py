@@ -66,12 +66,8 @@ class Schedule:
         cal = icalendar.Calendar()
         cal.add("prodid", "-//ue-schedule/UE Schedule//PL")
         cal.add("version", "2.0")
-
         # add event components
         for event in self.data:
-            event.start = event.start.replace(tzinfo=pytz.utc)
-            event.end = event.end.replace(tzinfo=pytz.utc)
-
             ev = icalendar.Event()
             ev.add("summary", event.name)
             ev.add("location", event.location)
@@ -99,8 +95,10 @@ class Event:
     def __init__(self, component):
         self.summary = str(component.get("summary")).strip()
         self.location = str(component.get("location")).strip()
-        self.start = component.get("dtstart").dt
-        self.end = component.get("dtend").dt
+
+        tz = pytz.timezone("Europe/Warsaw")
+        self.start = tz.normalize(tz.localize(component.get("dtstart").dt))
+        self.end = tz.normalize(tz.localize(component.get("dtend").dt))
 
         self.name = None
         self.teacher = None
