@@ -74,7 +74,7 @@ class Schedule:
             if event.location:
                 ev.add("location", event.location)
 
-            if event.description:
+            if event.teacher:
                 ev.add("description", event.teacher)
 
             ev.add("dtstart", icalendar.vDatetime(event.start))
