@@ -1,28 +1,37 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 import sys
+from datetime import datetime
 from ue_schedule import Schedule
 
 # Initialization
-if len(sys.argv) < 4:
+if len(sys.argv) == 2:
+    student_id = sys.argv[1]
+    start_date = None
+    end_date = None
+elif len(sys.argv) == 4:
+    student_id = sys.argv[1]
+    start_date = datetime.strptime(sys.argv[2], "%Y-%m-%d").date()
+    end_date = datetime.strptime(sys.argv[3], "%Y-%m-%d").date()
+else:
     print(
-        "Usage: python test.py <studentId> <start date YYYY-MM-DD> <end date YYYY-MM-DD> -flags"
+        "Usage: python test.py <studentId> or python test.py <studentId> <startDate> <endDate>"
     )
     sys.exit(1)
 
-studentId = sys.argv[1]
-startDate = sys.argv[2]
-endDate = sys.argv[3]
 
 # Initialize the downloader
-schedule = Schedule(studentId, startDate, endDate)
+schedule = Schedule(student_id)
+events = schedule.get_events(start_date, end_date)
 
-# Display all the events
-for day, events in schedule.nested_events.items():
-
+# Display all the events by date
+for day, events in events.items():
     print(day)
 
-    for event in events:
-        start = event.start.strftime("%H:%M")
-        end = event.end.strftime("%H:%M")
+    if len(events) > 0:
+        for event in events:
+            start = event.start.strftime("%H:%M")
+            end = event.end.strftime("%H:%M")
 
-        print(f"\t{start} - {end}\n\t{event.name}\n\t{event.teacher}\n")
+            print(f"\t{start} - {end}\n\t{event.name}\n\t{event.teacher}\n")
+    else:
+        print("\tNo events for this day")
