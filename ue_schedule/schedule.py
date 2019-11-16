@@ -7,93 +7,111 @@ import datetime
 
 
 class Schedule:
-    def __init__(self, schedule_id, start_date=None, end_date=None):
+    def __init__(self, schedule_id):
         self.base_url = "https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
-        self.data = None
+
+        self.events = None  # schedule events
+        self.first_day = None  # first date in fetched events
+        self.last_day = None  # last date in fetched events
 
         self.schedule_id = schedule_id
-        self.start_date = start_date
-        self.end_date = end_date
 
     @property
-    def url(self):
-        if self.start_date and self.end_date:
-            return f"{self.base_url}/calendarid_{self.schedule_id}.ics?dataod={self.start_date}&datado={self.end_date}"
+    def _url(self):
         return f"{self.base_url}/calendarid_{self.schedule_id}.ics"
 
-    def fetch(self):
-        calendar = icalendar.Calendar.from_ical(requests.get(self.url).text)
+    def fetch_events(self):
+        """Fetch events"""
+        calendar = icalendar.Calendar.from_ical(requests.get(self._url).text)
 
         # create a list of events out of the calendar
-        data = [
+        events = [
             Event(component)
             for component in calendar.walk()
             if component.name == "VEVENT"
         ]
 
+        self.first_day = min(events, key=lambda e: e.start).start.date()
+        self.last_day = max(events, key=lambda e: e.start).start.date()
+
         # save only relevant events
-        self.data = [e for e in data if not e.irrelevant]
+        self.events = [e for e in events if not e.irrelevant]
 
-    @property
-    def events(self):
-        if not self.data:
-            self.fetch()
-        return self.data
+    def load_events(self, events):
+        """Load events from existing object"""
+        self.first_day = min(events, key=lambda e: e.start).start.date()
+        self.last_day = max(events, key=lambda e: e.start).start.date()
+        self.events = events
 
-    @property
-    def nested_events(self):
-        if not self.data:
-            self.fetch()
+    def dump_events(self):
+        """Dump events for loading later"""
+        return self.events
 
-        nested = {}
+    def get_events(self, start_date=None, end_date=None):
+        """Get nested events as a dict"""
+        if not self.events:
+            self.fetch_events()
 
-        for event in self.data:
-            date = datetime.date(event.start.year, event.start.month, event.start.day)
+        if not (start_date and end_date):
+            start_date = self.first_day
+            end_date = self.last_day
 
-            if date not in nested.keys():
-                nested[date] = []
+        nested = dict()
 
-            nested[date].append(event)
+        for offset in range((end_date - start_date).days + 1):
+            day = start_date + datetime.timedelta(days=offset)
+            nested[day] = []
+
+        for event in self.events:
+            date = event.start.date()
+            if date in nested.keys():
+                nested[date].append(event)
 
         return nested
 
-    def to_ical(self):
-        """Build an iCalendar out of the parsed schedule"""
-        if not self.data:
-            self.fetch()
+    def get_json(self, start_date=None, end_date=None):
+        """Get events as json"""
+        events = self.get_events(start_date, end_date)
+
+        events = {day.isoformat(): events for (day, events) in events.items()}
+
+        def serialize(o):
+            if isinstance(o, datetime.datetime):
+                return o.isoformat()
+
+            if isinstance(o, datetime.date):
+                return o.isoformat()
+
+            if isinstance(o, Event):
+                return o.__dict__
+
+        return json.dumps(events, default=serialize)
+
+    def get_ical(self, start_date=None, end_date=None):
+        """Get iCalendar out of the parsed schedule"""
+        events = self.get_events(start_date, end_date)
 
         # initialize calendar
         cal = icalendar.Calendar()
         cal.add("prodid", "-//ue-schedule/UE Schedule//PL")
         cal.add("version", "2.0")
         # add event components
-        for event in self.data:
-            ev = icalendar.Event()
-            ev.add("summary", event.name)
+        for event_list in events.values():
 
-            if event.location:
-                ev.add("location", event.location)
+            for event in event_list:
+                ev = icalendar.Event()
+                ev.add("summary", event.name)
 
-            if event.teacher:
-                ev.add("description", event.teacher)
+                if event.location:
+                    ev.add("location", event.location)
 
-            ev.add("dtstart", icalendar.vDatetime(event.start))
-            ev.add("dtend", icalendar.vDatetime(event.end))
-            cal.add_component(ev)
+                if event.teacher:
+                    ev.add("description", event.teacher)
+
+                ev.add("dtstart", icalendar.vDatetime(event.start))
+                ev.add("dtend", icalendar.vDatetime(event.end))
+                cal.add_component(ev)
         return cal.to_ical()
-
-    def to_json(self):
-        if not self.data:
-            self.fetch()
-
-        def serialize(o):
-            if isinstance(o, datetime.datetime):
-                return o.isoformat()
-
-            if isinstance(o, Event):
-                return o.__dict__
-
-        return json.dumps(self.data, default=serialize)
 
 
 class Event:
