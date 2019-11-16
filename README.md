@@ -15,35 +15,43 @@ pip install ue-schedule
 
 ### Development
 You can install dependencies in a virtualenv with pipenv
-```
+```bash
 pipenv install
+
+# for dev dependencies (flake8, pylint, black)
+pipenv install --dev 
+
+# switch to the virtualenv
 pipenv shell
 ```
 
 ### Usage
-Import
 ```python
 from ue_schedule import Schedule
-```
 
-Initialization
-```python
-# initialize the downloader with dates
-s = Schedule(schedule_id, start_date, end_date)
-
-# and without dates
+# initialize the downloader
 s = Schedule(schedule_id)
-```
 
-Export
-```python
 # get event list
-schedule.events
+schedule.get_events()
 
-# export as iCalendar
-schedule.to_ical()
+# get event list as iCalendar
+schedule.get_ical()
+
+# get event list as json
+schedule.get_json()
 ```
+
 Data is automatically fetched when exporting, but you can force fetch with
 ```python
 schedule.fetch()
+```
+
+If you need to dump the event list and load later
+```python
+# dump the event list
+events = schedule.dump_events()
+
+# load the event list
+schedule.load_events(events)
 ```
