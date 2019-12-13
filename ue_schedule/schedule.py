@@ -130,7 +130,11 @@ class Event:
 
     @property
     def irrelevant(self):
-        return self.summary.startswith("Język obcy I, Język obcy II")
+        language_block = self.summary.startswith("Język obcy I, Język obcy II")
+        pe_without_teacher = self.summary.startswith(
+            "Wychowanie fizyczne - WF  brak nauczyciela"
+        )
+        return language_block or pe_without_teacher
 
     def filter(self):
         # replace @ with CNTI
@@ -140,7 +144,7 @@ class Event:
         self.summary = re.sub(r"\w{1,}_K-ce_19_z_SI_.*(,)?", "", self.summary)
 
         # split summary into name and teacher
-        split_summary = self.summary.split("  ", 1)
+        split_summary = self.summary.split("  ")
         self.name = split_summary[0].strip()
         self.teacher = split_summary[1].strip()
 
@@ -157,4 +161,3 @@ class Event:
         # set teacher to none if not specified
         if self.teacher == "brak nauczyciela":
             self.teacher = None
-
