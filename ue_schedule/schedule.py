@@ -154,6 +154,10 @@ class Event:
         if duration == datetime.timedelta(minutes=100):
             self.end -= datetime.timedelta(minutes=10)
 
+        # fix finish time of 2.25h events
+        if duration == datetime.timedelta(minutes=145):
+            self.end -= datetime.timedelta(minutes=10)
+
         # set location to none if not specified
         if self.location == "brak lokalizacji brak sali":
             self.location = None
