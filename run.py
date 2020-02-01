@@ -32,6 +32,6 @@ for day, events in events.items():
             start = event.start.strftime("%H:%M")
             end = event.end.strftime("%H:%M")
 
-            print(f"\t{start} - {end}\n\t{event.name}\n\t{event.teacher}\n")
+            print(f"\t{start} - {end}\n\t{event.name}\n\t{event.teacher} - {event.location}\n")
     else:
         print("\tNo events for this day")
