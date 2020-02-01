@@ -64,6 +64,14 @@ class Schedule:
 
         for event in self.events:
             date = event.start.date()
+
+            if "wychowanie fizyczne" in event.summary.lower():
+                duplicates = [e for e in self.events if (e is not event and e.start == event.start and e.end == event.end)]
+
+                if len(duplicates) > 0 and not event.teacher and not event.location:
+                    if duplicates[0].teacher or duplicate[0].location:
+                        continue
+
             if date in nested.keys():
                 nested[date].append(event)
 
@@ -131,22 +139,27 @@ class Event:
     @property
     def irrelevant(self):
         language_block = self.summary.startswith("Język obcy I, Język obcy II")
-        pe_without_teacher = self.summary.startswith(
-            "Wychowanie fizyczne - WF  brak nauczyciela"
-        )
-        return language_block or pe_without_teacher
+        return language_block
 
     def filter(self):
         # replace @ with CNTI
         self.location = self.location.replace("@", "CNTI")
 
         # remove groups from summary
-        self.summary = re.sub(r"\w{1,}_K-ce_19_z_SI_.*(,)?", "", self.summary)
+        self.summary = re.sub(r"\w{1,}_K-ce.*(,)?", "", self.summary)
 
         # split summary into name and teacher
-        split_summary = self.summary.split("  ")
-        self.name = split_summary[0].strip()
-        self.teacher = split_summary[1].strip()
+        split_summary = self.summary.strip().split("  ")
+
+        if len(split_summary) > 1:
+            self.teacher = split_summary.pop().strip()
+            if self.teacher.startswith("_K-ce"):
+                self.teacher = split_summary.pop().strip()
+                
+            self.name = (" ".join(split_summary)).strip()
+        else:
+            self.teacher = None
+            self.name = split_summary[0]
 
         # fix the finish time of 1.5h events
         # if it's 1h 40min, subtract 10 min
@@ -165,3 +178,6 @@ class Event:
         # set teacher to none if not specified
         if self.teacher == "brak nauczyciela":
             self.teacher = None
+
+        # drop 'brak nauczyciela' and 'brak lokalizacji brak sali' from name if it persists
+        self.name = self.name.replace("brak nauczyciela", "").replace("brak lokalizacji brak sali", "")
