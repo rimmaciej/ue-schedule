@@ -168,7 +168,7 @@ class Event:
             self.end -= datetime.timedelta(minutes=10)
 
         # fix finish time of 2.25h events
-        if duration == datetime.timedelta(minutes=145):
+        if duration == datetime.timedelta(minutes=155):
             self.end -= datetime.timedelta(minutes=10)
 
         # set location to none if not specified
