@@ -1,4 +1,5 @@
 import setuptools
+
 from ue_schedule import VERSION
 
 with open("README.md", "r") as fh:
@@ -19,7 +20,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",
-    install_requires=["icalendar==4.0.3", "requests==2.22.0"],
+    python_requires=">=3.8",
+    install_requires=["icalendar==4.0.6", "requests==2.24.0"],
 )
-

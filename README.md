@@ -19,7 +19,7 @@ You can install dependencies in a virtualenv with pipenv
 pipenv install
 
 # for dev dependencies (flake8, pylint, black)
-pipenv install --dev 
+pipenv install --dev
 
 # switch to the virtualenv
 pipenv shell

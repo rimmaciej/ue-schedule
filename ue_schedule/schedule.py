@@ -85,8 +85,8 @@ class Schedule:
 
         nested: Dict[date, List[Event]] = dict()
 
-        for offset in range((end_date - start_date).days + 1):
-            day: date = start_date + timedelta(days=offset)
+        for offset in range((end_date - start_date).days + 1):  # type: ignore
+            day: date = start_date + timedelta(days=offset)  # type: ignore
             nested[day] = []
 
         for event in self.events:
