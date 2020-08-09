@@ -163,7 +163,7 @@ class Schedule:
 
             for event in event_list:
                 ev = CalEvent()
-                ev.add("summary", event.name)
+                ev.add("summary", f"{event.name} - {event.type}")
 
                 if event.location:
                     ev.add("location", event.location)
