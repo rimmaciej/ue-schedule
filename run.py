@@ -28,11 +28,11 @@ schedule = Schedule(student_id)
 events = schedule.get_events(start_date, end_date)
 
 # Display all the events by date
-for (day, events) in events.items():
-    print(day)
+for day in events:
+    print(day["date"])
 
-    if len(events) > 0:
-        for event in events:
+    if len(day["events"]) > 0:
+        for event in day["events"]:
             start: str = event.start.strftime("%H:%M")
             end: str = event.end.strftime("%H:%M")
 

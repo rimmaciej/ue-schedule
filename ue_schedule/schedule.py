@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import requests
+
 from icalendar import Calendar
 from icalendar import Event as CalEvent
 from icalendar.prop import vDatetime
@@ -15,6 +16,9 @@ class Schedule:
     Describes an object containing a class schedule
     """
 
+    first_day: date  # first date in fetched events
+    last_day: date  # last date in fetched events
+
     def __init__(self, schedule_id: int) -> None:
         """
         Initialize Schedule object
@@ -22,11 +26,7 @@ class Schedule:
         :param schedule_id: class schedule id
         """
         self.base_url: str = "https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
-
         self.events: List[Event] = []  # schedule events
-        self.first_day: Optional[date] = None  # first date in fetched events
-        self.last_day: Optional[date] = None  # last date in fetched events
-
         self.schedule_id: int = schedule_id
 
     @property
@@ -65,14 +65,14 @@ class Schedule:
         """
         return self.events
 
-    def get_events(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> Dict[date, List[Event]]:
+    def get_events(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> List[Dict[str, Any]]:
         """
-        Get events as a nested dictionary
+        Get events as a list of objects
 
         :param start_date: Schedule start date - optional, defaults to schedule start date
         :param end_date: Schedule end date - optional, defaults to schedule end date
 
-        :returns: A dictionary with days as keys and lists of events as values
+        :returns: A list of dictionaries representing days
         """
 
         # Fetch if events not loaded
@@ -83,11 +83,11 @@ class Schedule:
             start_date = self.first_day
             end_date = self.last_day
 
-        nested: Dict[date, List[Event]] = dict()
+        response: List[Dict[str, Any]] = list()
 
         for offset in range((end_date - start_date).days + 1):  # type: ignore
             day: date = start_date + timedelta(days=offset)  # type: ignore
-            nested[day] = []
+            response.append({"date": day, "events": []})
 
         for event in self.events:
             event_date: date = event.start.date()
@@ -104,23 +104,17 @@ class Schedule:
                     if duplicates[0].teacher or duplicates[0].location:
                         continue
 
-            if event_date in nested.keys():
-                nested[event_date].append(event)
+            if event_date in [d["date"] for d in response]:
+                next(day for day in response if day["date"] == event_date)["events"].append(event)
 
-        return nested
+        return response
 
-    def get_json(self, start_date: date = None, end_date: date = None) -> str:
+    @staticmethod
+    def format_as_json(events: List[dict]) -> str:
         """
-        Get the schedule as json
-
-        :param start_date: Schedule start date - optional, defaults to schedule start date
-        :param end_date: Schedule end date - optional, defaults to schedule end date
-
-        :return: schedule json string
+        Format existing schedule to json
+        :returns: json string
         """
-        json_events: Dict[str, List[Event]] = {
-            day.isoformat(): events for (day, events) in self.get_events(start_date, end_date).items()
-        }
 
         def serialize(o: Any) -> Any:
             """
@@ -141,27 +135,35 @@ class Schedule:
             if isinstance(o, Event):
                 return o.__dict__
 
-        return json.dumps(json_events, default=serialize)
+        return json.dumps(events, default=serialize)
 
-    def get_ical(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> bytes:
+    def get_json(self, start_date: date = None, end_date: date = None) -> str:
         """
-        Get the schedule as iCalendar file
+        Get the schedule as json
 
         :param start_date: Schedule start date - optional, defaults to schedule start date
         :param end_date: Schedule end date - optional, defaults to schedule end date
-        :returns: ics string
-        """
-        events: Dict[date, List[Event]] = self.get_events(start_date, end_date)
 
+        :return: schedule json string
+        """
+        schedule = self.get_events(start_date, end_date)
+        return self.format_as_json(schedule)
+
+    @staticmethod
+    def format_as_ical(events: List[dict]) -> bytes:
+        """
+        Format existing schedule to iCalendar
+        :returns: ics file
+        """
         # inictialize calendar
         cal = Calendar()
         cal.add("prodid", "-//ue-schedule/UE Schedule//PL")
         cal.add("version", "2.0")
 
         # add event components
-        for event_list in events.values():
+        for day in events:
 
-            for event in event_list:
+            for event in day["events"]:
                 ev = CalEvent()
                 ev.add("summary", f"{event.name} - {event.type}")
 
@@ -176,3 +178,14 @@ class Schedule:
                 cal.add_component(ev)
 
         return cal.to_ical()
+
+    def get_ical(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> bytes:
+        """
+        Get the schedule as iCalendar file
+
+        :param start_date: Schedule start date - optional, defaults to schedule start date
+        :param end_date: Schedule end date - optional, defaults to schedule end date
+        :returns: ics file
+        """
+        schedule = self.get_events(start_date, end_date)
+        return self.format_as_ical(schedule)
