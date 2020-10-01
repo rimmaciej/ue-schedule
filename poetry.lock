@@ -15,6 +15,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "click"
+version = "7.1.2"
+description = "Composable command line interface toolkit"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
 name = "icalendar"
 version = "4.0.7"
 description = "iCalendar parser/generator"
@@ -95,7 +103,7 @@ socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.8"
-content-hash = "44f3c6cd54140b60e2e29703ba144c4e4187c37ba5c7bec3bbe55bd808315ce3"
+content-hash = "4f815e28923e727b322158b9afafd72d5316e3eae720a1a3d19e1a7cce432b40"
 
 [metadata.files]
 certifi = [
@@ -105,6 +113,10 @@ certifi = [
 chardet = [
     {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},
     {file = "chardet-3.0.4.tar.gz", hash = "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"},
+]
+click = [
+    {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
+    {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
 ]
 icalendar = [
     {file = "icalendar-4.0.7-py2.py3-none-any.whl", hash = "sha256:8c35be16c1d0581a276002af883297aeffa8116e366fdce4d5318e1424aa1903"},
