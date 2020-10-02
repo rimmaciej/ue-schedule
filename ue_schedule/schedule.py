@@ -40,7 +40,7 @@ class Schedule:
         """
         Fetch events from Wirtualna Uczelnia
         """
-        calendar: Calendar = Calendar.from_ical(requests.get(self._url).text)  # type: ignore
+        calendar: Calendar = Calendar.from_ical(requests.get(self._url, verify=False).text)  # type: ignore
 
         # create a list of events out of the calendar
         self.events = [Event(component) for component in calendar.walk() if component.name == "VEVENT"]
