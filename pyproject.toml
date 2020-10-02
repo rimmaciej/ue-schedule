@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ue-schedule"
-version = "2.1.0"
+version = "2.1.1"
 description = "UE Katowice class schedule utility library"
 authors = ["Maciej Rim <maciej.rim@gmail.com>"]
 license = "MIT"
