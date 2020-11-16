@@ -3,12 +3,16 @@ from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import requests
-
+import urllib3
 from icalendar import Calendar
 from icalendar import Event as CalEvent
 from icalendar.prop import vDatetime
 
 from .event import Event
+from .exceptions import ScheduleFetchError, WUDeadError
+
+# Suppress only the single warning from urllib3 needed.
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class Schedule:
@@ -36,11 +40,17 @@ class Schedule:
         """
         return f"{self.base_url}/calendarid_{self.schedule_id}.ics"
 
-    def fetch_events(self) -> None:
+    def fetch_events(self, timeout: int = 5) -> None:
         """
         Fetch events from Wirtualna Uczelnia
         """
-        calendar: Calendar = Calendar.from_ical(requests.get(self._url, verify=False).text)  # type: ignore
+
+        try:
+            calendar: Calendar = Calendar.from_ical(requests.get(self._url, verify=False, timeout=timeout).text)  # type: ignore
+        except requests.exceptions.ConnectTimeout as e:
+            raise WUDeadError(e)
+        except Exception as e:
+            raise ScheduleFetchError(e)
 
         # create a list of events out of the calendar
         self.events = [Event(component) for component in calendar.walk() if component.name == "VEVENT"]
