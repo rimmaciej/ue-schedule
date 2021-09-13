@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ue-schedule"
-version = "2.1.2"
+version = "2.1.3"
 description = "UE Katowice class schedule utility library"
 authors = ["Maciej Rim <maciej.rim@gmail.com>"]
 license = "MIT"
@@ -12,13 +12,13 @@ keywords = ["class-schedule", "university", "ue-katowice"]
 ue-schedule = 'ue_schedule.cli:main'
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6.2"
 requests = "^2.24.0"
 icalendar = "^4.0.7"
 click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
-black = {version = "^20.8b1", allow-prereleases = true}
+black = "^21.8b0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
