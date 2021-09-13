@@ -153,7 +153,7 @@ class Schedule:
             if isinstance(o, Event):
                 return o.__dict__
 
-        return json.dumps(events, default=serialize)
+        return json.dumps(events, default=serialize, indent=2)
 
     def get_json(self, start_date: date = None, end_date: date = None) -> str:
         """
