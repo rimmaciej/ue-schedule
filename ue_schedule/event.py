@@ -38,9 +38,9 @@ class Event:
         if duration == timedelta(minutes=100) or duration == timedelta(minutes=155):
             self.end -= timedelta(minutes=10)
 
-        self.parseSummary(str(component.get("summary")).strip())
+        self._parse_summary(str(component.get("summary")).strip())
 
-    def parseSummary(self, summary: str):
+    def _parse_summary(self, summary: str):
         # remove groups from summary
         summary = re.sub(r"\w{1,}_K-ce.*(,)?", "", summary)
 
@@ -61,7 +61,9 @@ class Event:
             self.teacher = None
             self.name = split_summary[0]
 
-        self.name = self.name.replace("brak nauczyciela", "").replace("brak lokalizacji brak sali", "")
+        self.name = self.name.replace("brak nauczyciela", "").replace(
+            "brak lokalizacji brak sali", ""
+        )
 
         # split out event type from name
         split_name = self.name.strip().split(" - ")

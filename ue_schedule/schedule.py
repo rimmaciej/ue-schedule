@@ -46,14 +46,18 @@ class Schedule:
         """
 
         try:
-            calendar: Calendar = Calendar.from_ical(requests.get(self._url, verify=False, timeout=timeout).text)  # type: ignore
+            calendar: Calendar = Calendar.from_ical(
+                requests.get(self._url, verify=False, timeout=timeout).text  # nosec
+            )  # type: ignore
         except requests.exceptions.ConnectTimeout as e:
             raise WUDeadError(e)
         except Exception as e:
             raise ScheduleFetchError(e)
 
         # create a list of events out of the calendar
-        self.events = [Event(component) for component in calendar.walk() if component.name == "VEVENT"]
+        self.events = [
+            Event(component) for component in calendar.walk() if component.name == "VEVENT"
+        ]
 
         self.first_day = min(self.events, key=lambda e: e.start).start.date()
         self.last_day = max(self.events, key=lambda e: e.start).start.date()
@@ -75,7 +79,9 @@ class Schedule:
         """
         return self.events
 
-    def get_events(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> List[Dict[str, Any]]:
+    def get_events(
+        self, start_date: Optional[date] = None, end_date: Optional[date] = None
+    ) -> List[Dict[str, Any]]:
         """
         Get events as a list of objects
 
@@ -107,7 +113,9 @@ class Schedule:
 
             if "wychowanie fizyczne" in event.name.lower():
                 duplicates = [
-                    e for e in self.events if (e is not event and e.start == event.start and e.end == event.end)
+                    e
+                    for e in self.events
+                    if (e is not event and e.start == event.start and e.end == event.end)
                 ]
 
                 if len(duplicates) > 0 and not event.teacher and not event.location:

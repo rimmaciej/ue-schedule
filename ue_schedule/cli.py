@@ -10,12 +10,14 @@ today = datetime.now().date()
 
 @click.command()
 @click.argument("schedule_id", type=int)
-@click.option("-s", "--start", "start_date", type=click.DateTime(), default=str(today), show_default=True)
+@click.option(
+    "-s", "--start", "start_date", type=click.DateTime(), default=str(today), show_default=True
+)
 @click.option("-e", "--end", "end_date", type=click.DateTime())
 def main(schedule_id: int, start_date: datetime, end_date: Optional[datetime] = None):
     schedule = Schedule(schedule_id)
 
-    if start_date and not end_date:
+    if not end_date:
         end_date = start_date + timedelta(days=15)
 
     events = schedule.get_events(start_date.date(), end_date.date())
