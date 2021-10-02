@@ -3,10 +3,10 @@ from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import requests
-import urllib3
-from icalendar import Calendar
-from icalendar import Event as CalEvent
-from icalendar.prop import vDatetime
+import urllib3  # type: ignore
+from icalendar import Calendar  # type: ignore
+from icalendar import Event as CalEvent  # type: ignore
+from icalendar.prop import vDatetime  # type: ignore
 
 from .event import Event
 from .exceptions import ScheduleFetchError, WUDeadError

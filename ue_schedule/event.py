@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timedelta
 from typing import Optional
 
-from icalendar import Event as CalEvent
+from icalendar import Event as CalEvent  # type: ignore
 from pytz import timezone
 
 

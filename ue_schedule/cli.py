@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-import click
+import click  # type: ignore
 
 from .schedule import Schedule
 
