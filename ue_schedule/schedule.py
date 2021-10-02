@@ -56,7 +56,9 @@ class Schedule:
 
         # create a list of events out of the calendar
         self.events = [
-            Event(component) for component in calendar.walk() if component.name == "VEVENT"
+            Event.from_calendar(component)
+            for component in calendar.walk()
+            if component.name == "VEVENT"
         ]
 
         self.first_day = min(self.events, key=lambda e: e.start).start.date()
@@ -78,6 +80,29 @@ class Schedule:
         :returns: a list of events
         """
         return self.events
+
+    def dump_json(self) -> str:
+        """
+        Dump as list of events encoded in json
+
+        :returns: a json string
+        """
+
+        return json.dumps(self.events, default=Schedule.serialize_json)
+
+    def from_json(self, events_json: str) -> None:
+        events = [
+            Event(
+                name=evt["name"],
+                type=evt["type"],
+                teacher=evt["teacher"],
+                location=evt["location"],
+                start=datetime.fromisoformat(evt["start"]),
+                end=datetime.fromisoformat(evt["end"]),
+            )
+            for evt in json.loads(events_json)
+        ]
+        self.load_events(events)
 
     def get_events(
         self, start_date: Optional[date] = None, end_date: Optional[date] = None
@@ -127,34 +152,6 @@ class Schedule:
 
         return response
 
-    @staticmethod
-    def format_as_json(events: List[dict]) -> str:
-        """
-        Format existing schedule to json
-        :returns: json string
-        """
-
-        def serialize(o: Any) -> Any:
-            """
-            Serialize function for json.dumps
-
-            Convert date and datetime to isoformat string
-            Convert Event object to its dict representation
-
-            :param o: object to serialize
-            :returns: serialized object string
-            """
-            if isinstance(o, datetime):
-                return o.isoformat()
-
-            if isinstance(o, date):
-                return o.isoformat()
-
-            if isinstance(o, Event):
-                return o.__dict__
-
-        return json.dumps(events, default=serialize, indent=2)
-
     def get_json(self, start_date: date = None, end_date: date = None) -> str:
         """
         Get the schedule as json
@@ -166,6 +163,17 @@ class Schedule:
         """
         schedule = self.get_events(start_date, end_date)
         return self.format_as_json(schedule)
+
+    def to_ical(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> bytes:
+        """
+        Get the schedule as iCalendar file
+
+        :param start_date: Schedule start date - optional, defaults to schedule start date
+        :param end_date: Schedule end date - optional, defaults to schedule end date
+        :returns: ics file
+        """
+        schedule = self.get_events(start_date, end_date)
+        return self.format_as_ical(schedule)
 
     @staticmethod
     def format_as_ical(events: List[dict]) -> bytes:
@@ -197,13 +205,30 @@ class Schedule:
 
         return cal.to_ical()
 
-    def get_ical(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> bytes:
+    @staticmethod
+    def serialize_json(o: Any) -> Any:
         """
-        Get the schedule as iCalendar file
+        Serialize function for json.dumps
 
-        :param start_date: Schedule start date - optional, defaults to schedule start date
-        :param end_date: Schedule end date - optional, defaults to schedule end date
-        :returns: ics file
+        Convert date and datetime to isoformat string
+        Convert Event object to its dict representation
+
+        :param o: object to serialize
+        :returns: serialized object string
         """
-        schedule = self.get_events(start_date, end_date)
-        return self.format_as_ical(schedule)
+        if isinstance(o, datetime):
+            return o.isoformat()
+
+        if isinstance(o, date):
+            return o.isoformat()
+
+        if isinstance(o, Event):
+            return o.__dict__
+
+    @staticmethod
+    def format_as_json(events: List[dict]) -> str:
+        """
+        Format existing schedule to json
+        :returns: json string
+        """
+        return json.dumps(events, default=Schedule.serialize_json, indent=2)
