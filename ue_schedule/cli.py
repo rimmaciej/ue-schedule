@@ -9,13 +9,13 @@ today = datetime.now().date()
 
 
 @click.command()
-@click.argument("schedule_id", type=int)
+@click.argument("schedule_id", type=str)
 @click.option("-j", "--json", is_flag=True, default=False, show_default=True)
 @click.option(
     "-s", "--start", "start_date", type=click.DateTime(), default=str(today), show_default=True
 )
 @click.option("-e", "--end", "end_date", type=click.DateTime())
-def main(schedule_id: int, json: bool, start_date: datetime, end_date: Optional[datetime] = None):
+def main(schedule_id: str, json: bool, start_date: datetime, end_date: Optional[datetime] = None):
     schedule = Schedule(schedule_id)
 
     if not end_date:

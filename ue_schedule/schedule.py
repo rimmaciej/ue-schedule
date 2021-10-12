@@ -20,18 +20,22 @@ class Schedule:
     Describes an object containing a class schedule
     """
 
+    base_url = "https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
+    events: List[Event] = []  # schedule events
+
+    schedule_id: str  # id of the schedule
     first_day: date  # first date in fetched events
     last_day: date  # last date in fetched events
+    offset_time: bool  # should the event end times be fixed
 
-    def __init__(self, schedule_id: int) -> None:
+    def __init__(self, schedule_id: str, offset_time: bool = False) -> None:
         """
         Initialize Schedule object
 
         :param schedule_id: class schedule id
         """
-        self.base_url: str = "https://e-uczelnia.ue.katowice.pl/wsrest/rest/ical/phz"
-        self.events: List[Event] = []  # schedule events
-        self.schedule_id: int = schedule_id
+        self.schedule_id = schedule_id
+        self.offset_time = offset_time
 
     @property
     def _url(self) -> str:
@@ -56,7 +60,7 @@ class Schedule:
 
         # create a list of events out of the calendar
         self.events = [
-            Event.from_calendar(component)
+            Event.from_calendar(component, self.offset_time)
             for component in calendar.walk()
             if component.name == "VEVENT"
         ]
@@ -67,6 +71,7 @@ class Schedule:
     def load_events(self, events: List[Event]) -> None:
         """
         Load events from existing object
+
         :param events: List of events
         """
         self.first_day = min(events, key=lambda e: e.start).start.date()
@@ -87,10 +92,14 @@ class Schedule:
 
         :returns: a json string
         """
-
         return json.dumps(self.events, default=Schedule.serialize_json)
 
     def from_json(self, events_json: str) -> None:
+        """
+        Load events from a json string
+
+        :param events_json: a json string with a list of events
+        """
         events = [
             Event(
                 name=evt["name"],
@@ -102,6 +111,7 @@ class Schedule:
             )
             for evt in json.loads(events_json)
         ]
+
         self.load_events(events)
 
     def get_events(
