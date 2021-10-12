@@ -107,3 +107,16 @@ class Event:
 
         return cls(name, type, teacher, location, start, end, groups)
 
+    def __eq__(self, other):
+        if not isinstance(other, Event):
+            raise False
+
+        return (
+            self.name == other.name
+            and self.type == other.type
+            and self.teacher == other.teacher
+            and self.location == other.location
+            and self.start == other.start
+            and self.end == other.end
+            and self.groups == other.groups
+        )
