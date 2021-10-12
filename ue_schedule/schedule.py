@@ -1,6 +1,6 @@
 import json
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import requests
 import urllib3  # type: ignore
@@ -185,6 +185,10 @@ class Schedule:
         """
         schedule = self.get_events(start_date, end_date)
         return self.format_as_ical(schedule)
+
+    @property
+    def groups(self) -> Set[str]:
+        return {group for event in self.events for group in event.groups}
 
     @staticmethod
     def format_as_ical(events: List[dict]) -> bytes:
