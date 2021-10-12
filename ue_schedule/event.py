@@ -1,9 +1,11 @@
 import re
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional
 
 from icalendar import Event as CalEvent  # type: ignore
 from pytz import timezone
+
+GROUP_REGEX = re.compile(r"(\w{1,}_K-ce.*,?)")
 
 
 class Event:
@@ -17,6 +19,7 @@ class Event:
     type: Optional[str]
     teacher: Optional[str]
     location: Optional[str]
+    groups: List[str]
 
     def __init__(
         self,
@@ -26,6 +29,7 @@ class Event:
         location: Optional[str],
         start: datetime,
         end: datetime,
+        groups: List[str] = [],
     ):
         self.name = name
         self.type = type
@@ -33,6 +37,7 @@ class Event:
         self.start = start
         self.end = end
         self.location = location
+        self.groups = groups
 
     @classmethod
     def from_calendar(cls, component: CalEvent, offset_time: bool = False) -> "Event":
@@ -59,8 +64,15 @@ class Event:
             if duration == timedelta(minutes=100) or duration == timedelta(minutes=155):
                 end -= timedelta(minutes=10)
 
-        # remove groups from summary
-        summary = re.sub(r"\w{1,}_K-ce.*(,)?", "", str(component.get("summary")).strip())
+        # extract groups from summary
+        _summary = str(component.get("summary")).strip()
+        summary = re.sub(GROUP_REGEX, "", _summary)
+
+        _groups = re.search(GROUP_REGEX, _summary)
+        if _groups:
+            groups = [group.strip() for group in _groups[0].split(",")]
+        else:
+            groups = []
 
         # split summary into name and teacher
         split_summary = summary.strip().split("  ")
@@ -93,4 +105,5 @@ class Event:
         else:
             type = None
 
-        return cls(name, type, teacher, location, start, end)
+        return cls(name, type, teacher, location, start, end, groups)
+

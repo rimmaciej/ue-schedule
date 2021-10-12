@@ -108,6 +108,7 @@ class Schedule:
                 location=evt["location"],
                 start=datetime.fromisoformat(evt["start"]),
                 end=datetime.fromisoformat(evt["end"]),
+                groups=evt["groups"],
             )
             for evt in json.loads(events_json)
         ]
