@@ -35,7 +35,7 @@ class Event:
         self.location = location
 
     @classmethod
-    def from_calendar(cls, component: CalEvent) -> "Event":
+    def from_calendar(cls, component: CalEvent, offset_time: bool = False) -> "Event":
         """
         Initialize Event object
 
@@ -52,11 +52,12 @@ class Event:
         start: datetime = tz.normalize(tz.localize(component.get("dtstart").dt))
         end: datetime = tz.normalize(tz.localize(component.get("dtend").dt))
 
-        # fix the finish time of 1.5h or 2.25h events
-        # subtract 10 min break pointlessly included in original schedule
-        duration = end - start
-        if duration == timedelta(minutes=100) or duration == timedelta(minutes=155):
-            end -= timedelta(minutes=10)
+        if offset_time:
+            # fix the finish time of 1.5h or 2.25h events
+            # subtract 10 min break pointlessly included in original schedule
+            duration = end - start
+            if duration == timedelta(minutes=100) or duration == timedelta(minutes=155):
+                end -= timedelta(minutes=10)
 
         # remove groups from summary
         summary = re.sub(r"\w{1,}_K-ce.*(,)?", "", str(component.get("summary")).strip())
