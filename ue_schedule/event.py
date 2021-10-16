@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import List, Optional
 
@@ -8,6 +9,7 @@ from pytz import timezone
 GROUP_REGEX = re.compile(r"(\w{1,}_K-ce.*,?)")
 
 
+@dataclass(frozen=True, order=True)
 class Event:
     """
     Class representing a single class schedule Event
@@ -16,35 +18,20 @@ class Event:
     name: str
     start: datetime
     end: datetime
-    type: Optional[str]
-    teacher: Optional[str]
-    location: Optional[str]
-    groups: List[str]
-
-    def __init__(
-        self,
-        name: str,
-        type: Optional[str],
-        teacher: Optional[str],
-        location: Optional[str],
-        start: datetime,
-        end: datetime,
-        groups: List[str] = [],
-    ):
-        self.name = name
-        self.type = type
-        self.teacher = teacher
-        self.start = start
-        self.end = end
-        self.location = location
-        self.groups = groups
+    type: Optional[str] = None
+    teacher: Optional[str] = None
+    location: Optional[str] = None
+    groups: List[str] = field(default_factory=list)
 
     @classmethod
     def from_calendar(cls, component: CalEvent, offset_time: bool = False) -> "Event":
         """
-        Initialize Event object
+        Create an Event from a calendar event
 
         :param component: calendar event component
+        :param offset_time: apply a time offset to 100 and 155 minute events
+
+        :returns: Event instance
         """
         # Get location from the calendar event replace @ with CNTI, set as None if no location
         location: Optional[str] = str(component.get("location")).strip()
@@ -105,18 +92,4 @@ class Event:
         else:
             type = None
 
-        return cls(name, type, teacher, location, start, end, groups)
-
-    def __eq__(self, other):
-        if not isinstance(other, Event):
-            raise False
-
-        return (
-            self.name == other.name
-            and self.type == other.type
-            and self.teacher == other.teacher
-            and self.location == other.location
-            and self.start == other.start
-            and self.end == other.end
-            and self.groups == other.groups
-        )
+        return cls(name, start, end, type, teacher, location, groups)
