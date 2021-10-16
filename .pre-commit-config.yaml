@@ -1,0 +1,15 @@
+repos:
+    - repo: local
+      hooks:
+          - id: flakehell
+            name: flakehell
+            entry: flakehell lint
+            types: [python]
+            language: python
+            stages: [push, commit]
+          - id: mypy
+            name: mypy
+            entry: mypy
+            types: [python]
+            language: python
+            stages: [push, commit]

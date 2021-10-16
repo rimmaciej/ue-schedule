@@ -35,6 +35,10 @@ poetry shell
 # to lint and typecheck, in the root directory run:
 flakehell lint
 mypy .
+
+# there is a pre-commit hook to run both flakehell and mypy
+# you can run it manually on all files with
+pre-commit run -a
 ```
 
 ### Usage
