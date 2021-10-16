@@ -23,8 +23,8 @@ class Event:
     location: Optional[str] = None
     groups: List[str] = field(default_factory=list)
 
-    @classmethod
-    def from_calendar(cls, component: CalEvent, offset_time: bool = False) -> "Event":
+    @staticmethod
+    def from_calendar(component: CalEvent, offset_time: bool = False) -> "Event":
         """
         Create an Event from a calendar event
 
@@ -92,4 +92,4 @@ class Event:
         else:
             type = None
 
-        return cls(name, start, end, type, teacher, location, groups)
+        return Event(name, start, end, type, teacher, location, groups)
