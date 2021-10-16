@@ -3,21 +3,21 @@ repos:
       hooks:
           - id: flakehell
             name: flakehell
-            entry: flakehell lint
+            entry: poetry run flakehell lint
             types: [python]
-            language: python
+            language: system
             stages: [push, commit]
           - id: mypy
             name: mypy
-            entry: mypy
+            entry: poetry run mypy
             types: [python]
-            language: python
+            language: system
             stages: [push, commit]
           - id: pytest
             name: pytest
-            entry: pytest
+            entry: poetry run pytest
             types: [python]
-            language: python
+            language: system
             pass_filenames: false
             always_run: true
             stages: [push, commit]
