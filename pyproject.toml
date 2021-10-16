@@ -54,7 +54,7 @@ show_source = false
 exclude = ['*.md']
 
 [tool.flakehell.plugins]
-flake8-bandit = ["+*"]
+flake8-bandit = ["+*", "-S101"]
 flake8-bugbear = ["+*"]
 flake8-builtins = ["+*"]
 flake8-comprehensions = ["+*"]

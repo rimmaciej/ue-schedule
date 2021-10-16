@@ -30,13 +30,16 @@ poetry install
 poetry shell
 ```
 
-#### Linting
+#### Linting and testing
 ```bash
 # to lint and typecheck, in the root directory run:
 flakehell lint
 mypy .
 
-# there is a pre-commit hook to run both flakehell and mypy
+# To run tests, run:
+pytest
+
+# there is a pre-commit hook that lints, typechecks and runs tests
 # you can run it manually on all files with
 pre-commit run -a
 ```

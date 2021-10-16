@@ -13,3 +13,11 @@ repos:
             types: [python]
             language: python
             stages: [push, commit]
+          - id: pytest
+            name: pytest
+            entry: pytest
+            types: [python]
+            language: python
+            pass_filenames: false
+            always_run: true
+            stages: [push, commit]
