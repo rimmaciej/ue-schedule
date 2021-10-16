@@ -8,7 +8,7 @@ from icalendar import Calendar  # type: ignore
 from icalendar import Event as CalEvent  # type: ignore
 from icalendar.prop import vDatetime  # type: ignore
 
-from .event import Event
+from .event import Event, EventType
 from .exceptions import ScheduleFetchError, WUDeadError
 
 # Suppress only the single warning from urllib3 needed.
@@ -236,6 +236,9 @@ class Schedule:
 
         if isinstance(o, date):
             return o.isoformat()
+
+        if isinstance(o, EventType):
+            return o.name
 
         if isinstance(o, Event):
             return o.__dict__

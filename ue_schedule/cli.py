@@ -42,7 +42,7 @@ def main(
     events = schedule.get_events(start_date.date(), end_date.date())
 
     if json:
-        print(schedule.get_json(start_date, end_date))
+        print(Schedule.format_as_json(events))
         return
 
     response = ""
