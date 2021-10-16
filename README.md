@@ -25,10 +25,16 @@ ue-schedule <schedule_id>
 You can install dependencies in a virtualenv with poetry
 
 ```bash
+# create virtualenv, install dependencies and switch to the virtualenv
 poetry install
-
-# switch to the virtualenv
 poetry shell
+```
+
+#### Linting
+```bash
+# to lint and typecheck, in the root directory run:
+flakehell lint
+mypy .
 ```
 
 ### Usage
@@ -37,7 +43,7 @@ poetry shell
 from ue_schedule import Schedule
 
 # initialize the downloader
-s = Schedule(schedule_id)
+schedule = Schedule("<schedule id here>")
 
 # get event list
 schedule.get_events()

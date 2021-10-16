@@ -51,8 +51,8 @@ class Schedule:
 
         try:
             calendar: Calendar = Calendar.from_ical(
-                requests.get(self._url, verify=False, timeout=timeout).text  # nosec
-            )  # type: ignore
+                requests.get(self._url, verify=False, timeout=timeout).text  # noqa: S501 # nosec
+            )
         except requests.exceptions.ConnectTimeout as e:
             raise WUDeadError(e)
         except Exception as e:
@@ -135,7 +135,7 @@ class Schedule:
             start_date = self.first_day
             end_date = self.last_day
 
-        response: List[Dict[str, Any]] = list()
+        response: List[Dict[str, Any]] = []
 
         for offset in range((end_date - start_date).days + 1):  # type: ignore
             day: date = start_date + timedelta(days=offset)  # type: ignore
