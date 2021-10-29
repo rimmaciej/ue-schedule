@@ -1,0 +1,42 @@
+name: Checks
+
+on: [pull_request]
+
+defaults:
+    run:
+        working-directory: ue-schedule
+
+jobs:
+    tests:
+        name: Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - uses: actions/setup-python@v2
+              with:
+                  python-version: 3.6.2
+
+            - name: Setup poetry
+              uses: Gr1N/setup-poetry@v4
+
+            - name: Cache
+              uses: actions/cache@v2
+              with:
+                  path: ~/.cache/pypoetry/virtualenvs
+                  key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-poetry-
+            - name: Install requirements
+              run: poetry install --no-root
+
+            - name: Lint
+              run: flakehell lint
+
+            - name: Type check
+              run: mypy
+
+            - name: Run tests
+              run: pytest
