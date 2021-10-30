@@ -2,9 +2,9 @@ name: Checks
 
 on: [push, pull_request]
 
-defaults:
-    run:
-        working-directory: ue-schedule
+# defaults:
+#     run:
+#         working-directory: ue-schedule
 
 jobs:
     tests:
