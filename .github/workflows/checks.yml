@@ -32,7 +32,7 @@ jobs:
               run: poetry run flakehell lint
 
             - name: Type check
-              run: poetry run mypy
+              run: poetry run mypy .
 
             - name: Run tests
-              run: poetry run pytest
+              run: poetry run pytest .
