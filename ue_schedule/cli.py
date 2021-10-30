@@ -1,10 +1,12 @@
+import sys
 from datetime import datetime, timedelta
 from typing import Optional
 
 import click  # type: ignore
 
-from .event import EventType
-from .schedule import Schedule
+from ue_schedule import Schedule
+from ue_schedule.event import EventType
+from ue_schedule.exceptions import InvalidIdError, WrongResponseError, WUTimeoutError
 
 today = datetime.now().date()
 
@@ -39,7 +41,14 @@ def main(
     if not end_date:
         end_date = start_date + timedelta(days=15)
 
-    events = schedule.get_events(start_date.date(), end_date.date())
+    try:
+        events = schedule.get_events(start_date.date(), end_date.date())
+    except InvalidIdError:
+        print("Provided ID is invalid.")
+        sys.exit(1)
+    except (WUTimeoutError, WrongResponseError):
+        print("Failed to fetch schedule.")
+        sys.exit(1)
 
     if json:
         print(Schedule.format_as_json(events))
