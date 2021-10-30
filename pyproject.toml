@@ -34,6 +34,8 @@ pep8-naming = "^0.12.1"
 flake8-pytest-style = "^1.5.0"
 flake8-mutable = "^1.2.0"
 pre-commit = "^2.15.0"
+types-pytz = "^2021.3.0"
+types-requests = "^2.25.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
