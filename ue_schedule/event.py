@@ -103,6 +103,6 @@ class Event:
         elif summary.endswith("brak nauczyciela"):
             teacher = None
             event_type = EventType.Inny
-            name = summary.removesuffix("brak nauczyciela")
+            name = summary.rstrip("brak nauczyciela")
 
         return Event(name, start, end, event_type, teacher, location, groups)
