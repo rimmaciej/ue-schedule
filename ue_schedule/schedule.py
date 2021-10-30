@@ -9,7 +9,7 @@ from icalendar import Event as CalEvent  # type: ignore
 from icalendar.prop import vDatetime  # type: ignore
 
 from .event import Event, EventType
-from .exceptions import ScheduleFetchError, WUDeadError
+from .exceptions import InvalidIdError, WrongResponseError, WUTimeoutError
 
 # Suppress only the single warning from urllib3 needed.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -47,16 +47,28 @@ class Schedule:
     def fetch_events(self, timeout: int = 5) -> None:
         """
         Fetch events from Wirtualna Uczelnia
+
+        :param timeout: request timeout passed to requests.get
+
+        :raises InvalidIdError: when the id might be wrong
+        :raises WUTimeoutError: when the request to WU times out
+        :raises WrongResponseError: when the response returned by WU can't be parsed
         """
 
         try:
-            calendar: Calendar = Calendar.from_ical(
-                requests.get(self._url, verify=False, timeout=timeout).text  # noqa: S501 # nosec
-            )
+            response = requests.get(self._url, timeout=timeout)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            if response.status_code in (400, 404):
+                raise InvalidIdError(e)
+            raise
         except requests.exceptions.ConnectTimeout as e:
-            raise WUDeadError(e)
-        except Exception as e:
-            raise ScheduleFetchError(e)
+            raise WUTimeoutError(e)
+
+        try:
+            calendar: Calendar = Calendar.from_ical(response.text)
+        except ValueError as e:
+            raise WrongResponseError(e)
 
         # create a list of events out of the calendar
         self.events = [

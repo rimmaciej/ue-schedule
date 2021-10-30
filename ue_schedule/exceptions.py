@@ -1,6 +1,10 @@
-class WUDeadError(Exception):
+class WUTimeoutError(Exception):
     pass
 
 
-class ScheduleFetchError(Exception):
+class InvalidIdError(Exception):
+    pass
+
+
+class WrongResponseError(Exception):
     pass
