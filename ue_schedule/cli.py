@@ -1,3 +1,6 @@
+"""
+This module is a CLI tool that is an example of how to use the library.
+"""
 import sys
 from datetime import datetime, timedelta
 from typing import Optional
@@ -11,13 +14,13 @@ from ue_schedule.exceptions import InvalidIdError, WrongResponseError, WUTimeout
 today = datetime.now().date()
 
 event_types = {
-    EventType.Wyklad: click.style("Wykład", fg="green"),
-    EventType.Cwiczenia: click.style("Ćwiczenia", fg="red"),
-    EventType.Laboratorium: click.style("Laboratorium", fg="magenta"),
-    EventType.Lektorat: click.style("Lektorat", fg="blue"),
-    EventType.Seminarium: click.style("Seminarium", fg="cyan"),
+    EventType.WYKLAD: click.style("Wykład", fg="green"),
+    EventType.CWICZENIA: click.style("Ćwiczenia", fg="red"),
+    EventType.LABORATORIUM: click.style("Laboratorium", fg="magenta"),
+    EventType.LEKTORAT: click.style("Lektorat", fg="blue"),
+    EventType.SEMINARIUM: click.style("Seminarium", fg="cyan"),
     EventType.WF: click.style("WF", fg="yellow"),
-    EventType.Inny: click.style("Inny", fg="bright_black"),
+    EventType.INNY: click.style("Inny", fg="bright_black"),
 }
 
 
@@ -36,6 +39,9 @@ def main(
     start_date: datetime,
     end_date: Optional[datetime] = None,
 ) -> None:
+    """
+    CLI Entry point function
+    """
     schedule = Schedule(schedule_id)
 
     if not end_date:
@@ -74,8 +80,8 @@ def main(
             response += f"                 {teacher}\n"
 
             if groups:
-                groups = click.style(", ".join(event.groups), fg="bright_black")
-                response += f"                 {groups}\n"
+                group_string = click.style(", ".join(event.groups), fg="bright_black")
+                response += f"                 {group_string}\n"
 
         response += "\n"
 
@@ -83,4 +89,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pylint: disable=no-value-for-parameter
