@@ -1,10 +1,21 @@
+"""
+Module with error definitions for the whole library
+"""
+
+
 class WUTimeoutError(Exception):
-    pass
+    """
+    Error for when request to Wirtualna Uczelnia timeouts
+    """
 
 
 class InvalidIdError(Exception):
-    pass
+    """
+    Error for when the schedule id is considered invalid
+    """
 
 
 class WrongResponseError(Exception):
-    pass
+    """
+    General wrong response error
+    """

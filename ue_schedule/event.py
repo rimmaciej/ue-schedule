@@ -1,3 +1,7 @@
+"""
+This module handles class schedule events
+"""
+
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -11,13 +15,17 @@ GROUP_REGEX = re.compile(r"([A-Z]*_K-ce.*,?)")
 
 
 class EventType(Enum):
-    Wyklad = 1
-    Cwiczenia = 2
-    Laboratorium = 3
-    Lektorat = 4
-    Seminarium = 5
+    """
+    Enum describing types of events in the schedule
+    """
+
+    WYKLAD = 1
+    CWICZENIA = 2
+    LABORATORIUM = 3
+    LEKTORAT = 4
+    SEMINARIUM = 5
     WF = 6
-    Inny = 7
+    INNY = 7
 
 
 @dataclass(frozen=True, order=True)
@@ -52,9 +60,9 @@ class Event:
         location = None if location == "brak lokalizacji brak sali" else location
 
         # Normalize start and end time to Europe/Warsaw timezone
-        tz = timezone("Europe/Warsaw")
-        start: datetime = tz.normalize(tz.localize(component.get("dtstart").dt))
-        end: datetime = tz.normalize(tz.localize(component.get("dtend").dt))
+        polish_tz = timezone("Europe/Warsaw")
+        start: datetime = polish_tz.normalize(polish_tz.localize(component.get("dtstart").dt))
+        end: datetime = polish_tz.normalize(polish_tz.localize(component.get("dtend").dt))
 
         if offset_time:
             # fix the finish time of 1.5h or 2.25h events
@@ -86,23 +94,23 @@ class Event:
 
             # Assign enum event types
             if "wykład" in _event_type:
-                event_type = EventType.Wyklad
+                event_type = EventType.WYKLAD
             elif "ćwiczenia" in _event_type:
-                event_type = EventType.Cwiczenia
+                event_type = EventType.CWICZENIA
             elif "lab" in _event_type:
-                event_type = EventType.Laboratorium
+                event_type = EventType.LABORATORIUM
             elif "lektorat" in _event_type:
-                event_type = EventType.Lektorat
+                event_type = EventType.LEKTORAT
             elif "wf" in _event_type:
                 event_type = EventType.WF
             elif "seminarium" in name.lower():
-                event_type = EventType.Seminarium
+                event_type = EventType.SEMINARIUM
             else:
-                event_type = EventType.Inny
+                event_type = EventType.INNY
 
         elif summary.endswith("brak nauczyciela"):
             teacher = None
-            event_type = EventType.Inny
+            event_type = EventType.INNY
             name = summary.rstrip("brak nauczyciela")
 
         return Event(name, start, end, event_type, teacher, location, groups)

@@ -1,3 +1,7 @@
+"""
+This module handles class schedule objects
+"""
+
 import json
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional, Set
@@ -58,17 +62,18 @@ class Schedule:
         try:
             response = requests.get(self._url, timeout=timeout)
             response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError as error:
             if response.status_code in (400, 404):
-                raise InvalidIdError(e)
+                raise InvalidIdError(error) from error
             raise
-        except requests.exceptions.ConnectTimeout as e:
-            raise WUTimeoutError(e)
+
+        except requests.exceptions.ConnectTimeout as error:
+            raise WUTimeoutError(error) from error
 
         try:
             calendar: Calendar = Calendar.from_ical(response.text)
-        except ValueError as e:
-            raise WrongResponseError(e)
+        except ValueError as error:
+            raise WrongResponseError(error) from error
 
         # create a list of events out of the calendar
         self.events = [
@@ -200,6 +205,11 @@ class Schedule:
 
     @property
     def groups(self) -> Set[str]:
+        """
+        All groups in this schedule
+
+        :returns: A set of group names
+        """
         return {group for event in self.events for group in event.groups}
 
     @staticmethod
@@ -217,23 +227,23 @@ class Schedule:
         for day in events:
 
             for event in day["events"]:
-                ev = CalEvent()
-                ev.add("summary", f"{event.name} - {event.type}")
+                cal_event = CalEvent()
+                cal_event.add("summary", f"{event.name} - {event.type}")
 
                 if event.location:
-                    ev.add("location", event.location)
+                    cal_event.add("location", event.location)
 
                 if event.teacher:
-                    ev.add("description", event.teacher)
+                    cal_event.add("description", event.teacher)
 
-                ev.add("dtstart", vDatetime(event.start))
-                ev.add("dtend", vDatetime(event.end))
-                cal.add_component(ev)
+                cal_event.add("dtstart", vDatetime(event.start))
+                cal_event.add("dtend", vDatetime(event.end))
+                cal.add_component(cal_event)
 
         return cal.to_ical()
 
     @staticmethod
-    def serialize_json(o: Any) -> Any:
+    def serialize_json(obj: Any) -> Any:
         """
         Serialize function for json.dumps
 
@@ -243,17 +253,17 @@ class Schedule:
         :param o: object to serialize
         :returns: serialized object string
         """
-        if isinstance(o, datetime):
-            return o.isoformat()
+        if isinstance(obj, datetime):
+            return obj.isoformat()
 
-        if isinstance(o, date):
-            return o.isoformat()
+        if isinstance(obj, date):
+            return obj.isoformat()
 
-        if isinstance(o, EventType):
-            return o.name
+        if isinstance(obj, EventType):
+            return obj.name
 
-        if isinstance(o, Event):
-            return o.__dict__
+        if isinstance(obj, Event):
+            return obj.__dict__
 
     @staticmethod
     def format_as_json(events: List[dict]) -> str:
