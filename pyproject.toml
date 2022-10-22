@@ -12,31 +12,31 @@ keywords = ["class-schedule", "university", "ue-katowice"]
 ue-schedule = 'ue_schedule.cli:main'
 
 [tool.poetry.dependencies]
-python = "^3.6.2"
-requests = "^2.24.0"
-icalendar = "^4.0.7"
-click = "^7.1.2"
+python = "^3.8.0"
+requests = "^2.28.1"
+icalendar = "^5.0.0"
+click = "^8.1.3"
 
-[tool.poetry.dev-dependencies]
-black = "^21.8b0"
-mypy = "^0.910"
-pycodestyle = "^2.7.0"
-isort = "^5.9.3"
-pytest = "^6.2.5"
-flake8-black = "^0.2.3"
-flakehell = "^0.9.0"
-flake8-bandit = "^2.1.2"
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+mypy = "^0.982"
+pycodestyle = "^2.9.1"
+isort = "^5.10.1"
+pytest = "^7.1.3"
+flake8-black = "^0.3.3"
 flake8-isort = "^4.1.1"
-flake8-comprehensions = "^3.7.0"
-flake8-eradicate = "^1.1.0"
-mccabe = "^0.6.1"
-pep8-naming = "^0.12.1"
-flake8-pytest-style = "^1.5.0"
+flake8-eradicate = "^1.4.0"
+pep8-naming = "^0.13.2"
+flake8-pytest-style = "^1.6.0"
 flake8-mutable = "^1.2.0"
-pre-commit = "^2.15.0"
-types-pytz = "^2021.3.0"
-types-requests = "^2.25.11"
+pre-commit = "^2.20.0"
+types-pytz = "^2022.5.0.0"
+types-requests = "^2.28.11.2"
 types-click = "^7.1.8"
+flake8 = "^5.0.4"
+mccabe = "^0.7.0"
+flake8-comprehensions = "^3.10.0"
+flake8-bandit = "^4.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -48,25 +48,3 @@ line-length = 100
 [tool.isort]
 profile = "black"
 line_length = 100
-
-[tool.flakehell]
-extended_default_ignore=[]
-format = "grouped"
-max_line_length = 100
-show_source = false
-exclude = ['*.md']
-
-[tool.flakehell.plugins]
-flake8-bandit = ["+*", "-S101"]
-flake8-bugbear = ["+*"]
-flake8-builtins = ["+*"]
-flake8-comprehensions = ["+*"]
-flake8-eradicate = ["+*"]
-flake8-isort = ["+*"]
-flake8-black = ["+*"]
-flake8-mutable = ["+*"]
-flake8-pytest-style = ["+*"]
-mccabe = ["+*"]
-pep8-naming = ["+*"]
-pycodestyle = ["+*"]
-pyflakes = ["+*"]

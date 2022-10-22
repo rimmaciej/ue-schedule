@@ -30,7 +30,7 @@ jobs:
               run: poetry install --no-root
 
             - name: Lint
-              run: poetry run flakehell lint
+              run: poetry run flake8
 
             - name: Type check
               run: poetry run mypy .
