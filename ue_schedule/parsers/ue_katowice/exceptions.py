@@ -1,5 +1,5 @@
 """
-Module with error definitions for the whole library
+Module with error definitions for the UE Katowice parser
 """
 
 
