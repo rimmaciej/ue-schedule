@@ -7,9 +7,13 @@ from typing import Optional
 
 import click  # type: ignore
 
-from ue_schedule import Schedule
-from ue_schedule.event import EventType
-from ue_schedule.exceptions import InvalidIdError, WrongResponseError, WUTimeoutError
+from ue_schedule.models.event import EventType
+from ue_schedule.parsers.ue_katowice import UEKatowiceParser
+from ue_schedule.parsers.ue_katowice.exceptions import (
+    InvalidIdError,
+    WrongResponseError,
+    WUTimeoutError,
+)
 
 today = datetime.now().date()
 
@@ -20,6 +24,7 @@ event_types = {
     EventType.LEKTORAT: click.style("Lektorat", fg="blue"),
     EventType.SEMINARIUM: click.style("Seminarium", fg="cyan"),
     EventType.WF: click.style("WF", fg="yellow"),
+    EventType.EGZAMIN: click.style("Egzamin", fg="bright_red"),
     EventType.INNY: click.style("Inny", fg="bright_black"),
 }
 
@@ -42,13 +47,14 @@ def main(
     """
     CLI Entry point function
     """
-    schedule = Schedule(schedule_id)
+    ue_parser = UEKatowiceParser(schedule_id)
 
     if not end_date:
         end_date = start_date + timedelta(days=15)
 
     try:
-        events = schedule.get_events(start_date.date(), end_date.date())
+        schedule = ue_parser.fetch()
+
     except InvalidIdError:
         print("Provided ID is invalid.")
         sys.exit(1)
@@ -57,19 +63,25 @@ def main(
         sys.exit(1)
 
     if json:
-        print(Schedule.format_as_json(events))
+        print(schedule.json())
         return
+
+    days = {
+        date: events
+        for date, events in schedule.group_by_day().items()
+        if start_date.date() <= date <= end_date.date()
+    }
 
     response = ""
 
-    for day in events:
+    for date, events in days.items():
 
-        if len(day["events"]) == 0:
-            response += click.style(f"{day['date']} - brak zajęć\n", fg="bright_black")
+        if len(events) == 0:
+            response += click.style(f"{date} - brak zajęć\n", fg="bright_black")
         else:
-            response += click.style(f"{day['date']}\n", fg="green")
+            response += click.style(f"{date}\n", fg="green")
 
-        for event in day["events"]:
+        for event in events:
             event_time = click.style(f"{event.start:%H:%M} - {event.end:%H:%M}", fg="yellow")
 
             teacher = click.style(

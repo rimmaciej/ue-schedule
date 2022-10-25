@@ -1,4 +1,3 @@
-from .event import Event
-from .schedule import Schedule
+from .parsers.ue_katowice import UEKatowiceParser
 
-__all__ = ["Schedule", "Event"]
+__all__ = ["UEKatowiceParser"]
